@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Library Assistant | AI CI3 Project</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- ==================== LEFT SIDEBAR ==================== -->
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-[#0f172a]/95 border-r border-slate-800 backdrop-blur-xl flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full">
+    <!-- Brand / Header -->
+    <div class="p-5 border-b border-slate-800">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+          <i data-lucide="library" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-sm text-slate-100 tracking-tight leading-snug">Digital Library</h1>
+          <p class="text-[11px] font-semibold text-indigo-400">Assistant • CI3 AI Project</p>
+        </div>
+      </div>
+
+      <!-- New Chat Button -->
+      <button id="newChatBtn" class="w-full mt-5 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-600/25">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>New Chat</span>
+      </button>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+      <div class="px-3 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Navigation</div>
+      
+      <a href="#" data-view="chat" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600/20 text-indigo-400 border-l-2 border-indigo-500 transition">
+        <i data-lucide="bot" class="w-4 h-4"></i>
+        <span>AI Assistant</span>
+      </a>
+
+      <a href="#" data-view="catalog" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition">
+        <i data-lucide="book" class="w-4 h-4"></i>
+        <span>Search Books</span>
+      </a>
+
+      <a href="#" data-view="categories" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition">
+        <i data-lucide="layout-grid" class="w-4 h-4"></i>
+        <span>Book Categories</span>
+      </a>
+
+      <a href="#" data-view="recommendations" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span>Recommendations</span>
+      </a>
+
+      <a href="#" data-view="rules" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition">
+        <i data-lucide="clock" class="w-4 h-4"></i>
+        <span>Timings & Rules</span>
+      </a>
+
+      <div class="pt-4 px-3 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Management & Academic</div>
+
+      <a href="#" data-view="admin" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition">
+        <i data-lucide="shield" class="w-4 h-4"></i>
+        <span>Admin Dashboard</span>
+      </a>
+
+      <a href="#" data-view="about" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition">
+        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+        <span>About Project (Viva Guide)</span>
+      </a>
+    </nav>
+
+    <!-- User / Role Footer -->
+    <div class="p-3 border-t border-slate-800" id="userBadgeContainer">
+      <!-- Populated dynamically by app.js -->
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT AREA ==================== -->
+  <main class="flex-1 flex flex-col min-h-screen lg:ml-72 bg-[#0b0f19]">
+    
+    <!-- Top Header Bar -->
+    <header class="h-16 border-b border-slate-800/80 bg-[#0f172a]/60 backdrop-blur-md px-4 lg:px-8 flex items-center justify-between sticky top-0 z-30">
+      <div class="flex items-center space-x-3">
+        <!-- Mobile hamburger -->
+        <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-xl text-slate-400 hover:bg-slate-800">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">College of Engineering</span>
+          <h2 class="text-sm font-bold text-slate-200">Central Academic Library Information System</h2>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span>
+          Knowledge Base Active
+        </span>
+      </div>
+    </header>
+
+    <!-- ==================== VIEW 1: CHAT ASSISTANT ==================== -->
+    <section id="chatView" class="flex-1 flex flex-col h-[calc(100vh-4rem)]">
+      
+      <!-- Chat Scroll Container -->
+      <div id="chatScrollContainer" class="flex-1 overflow-y-auto p-4 lg:p-8">
+        <div class="max-w-4xl mx-auto">
+          
+          <!-- Welcome Screen (Visible when chat is fresh) -->
+          <div id="welcomeHero" class="text-center py-6 lg:py-10">
+            <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center mx-auto mb-4 text-indigo-400 shadow-xl shadow-indigo-500/10">
+              <i data-lucide="bot" class="w-8 h-8"></i>
+            </div>
+            
+            <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-100 tracking-tight">
+              Welcome to <span class="gradient-text">Digital Library Assistant</span>
+            </h2>
+            <p class="text-xs lg:text-sm text-slate-400 mt-2 max-w-xl mx-auto leading-relaxed">
+              Your intelligent companion for discovering books, checking real-time availability,
+              obtaining recommendations, and querying college library rules.
+            </p>
+
+            <!-- 6 Example Prompt Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-8 text-left">
+              
+              <div class="glass-card p-4 rounded-2xl cursor-pointer hover:border-indigo-500/50" data-prompt="What books are available for Python?">
+                <div class="flex items-center space-x-2.5 mb-1.5">
+                  <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="book" class="w-4 h-4"></i></span>
+                  <h4 class="text-xs font-bold text-slate-200">Find a Book</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">“What books are available for Python?”</p>
+              </div>
+
+              <div class="glass-card p-4 rounded-2xl cursor-pointer hover:border-indigo-500/50" data-prompt="Find books on DBMS">
+                <div class="flex items-center space-x-2.5 mb-1.5">
+                  <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+                  <h4 class="text-xs font-bold text-slate-200">Search by Subject</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">“Find books on DBMS”</p>
+              </div>
+
+              <div class="glass-card p-4 rounded-2xl cursor-pointer hover:border-indigo-500/50" data-prompt="Recommend some books for learning data structures">
+                <div class="flex items-center space-x-2.5 mb-1.5">
+                  <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+                  <h4 class="text-xs font-bold text-slate-200">Get Recommendations</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">“Recommend some books for data structures”</p>
+              </div>
+
+              <div class="glass-card p-4 rounded-2xl cursor-pointer hover:border-indigo-500/50" data-prompt="Is Clean Code available?">
+                <div class="flex items-center space-x-2.5 mb-1.5">
+                  <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="check-circle" class="w-4 h-4"></i></span>
+                  <h4 class="text-xs font-bold text-slate-200">Check Availability</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">“Is Clean Code available?”</p>
+              </div>
+
+              <div class="glass-card p-4 rounded-2xl cursor-pointer hover:border-indigo-500/50" data-prompt="What are the library opening hours?">
+                <div class="flex items-center space-x-2.5 mb-1.5">
+                  <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="clock" class="w-4 h-4"></i></span>
+                  <h4 class="text-xs font-bold text-slate-200">Library Timings</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">“What are the library opening hours?”</p>
+              </div>
+
+              <div class="glass-card p-4 rounded-2xl cursor-pointer hover:border-indigo-500/50" data-prompt="How many books can I borrow?">
+                <div class="flex items-center space-x-2.5 mb-1.5">
+                  <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="info" class="w-4 h-4"></i></span>
+                  <h4 class="text-xs font-bold text-slate-200">Library Rules</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">“How many books can I borrow?”</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Live Chat Messages Container -->
+          <div id="chatMessagesContainer">
+            <!-- Dynamically populated by renderChatMessages() -->
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <div class="p-4 bg-[#0f172a]/80 border-t border-slate-800/80 backdrop-blur-md">
+        <div class="max-w-4xl mx-auto space-y-2">
+          
+          <!-- Suggested Quick Action Pills -->
+          <div class="flex items-center space-x-2 overflow-x-auto pb-1 text-xs">
+            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider flex-shrink-0">Suggestions:</span>
+            <button data-prompt="Find Python books" class="whitespace-nowrap px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] border border-slate-700 transition">
+              Find Python books
+            </button>
+            <button data-prompt="Check library timings" class="whitespace-nowrap px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] border border-slate-700 transition">
+              Check library timings
+            </button>
+            <button data-prompt="Recommend AI books" class="whitespace-nowrap px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] border border-slate-700 transition">
+              Recommend AI books
+            </button>
+            <button data-prompt="What is the fine for returning late?" class="whitespace-nowrap px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] border border-slate-700 transition">
+              Overdue fines
+            </button>
+          </div>
+
+          <!-- Text Input Form -->
+          <form id="chatForm" class="flex items-center space-x-2">
+            <div class="relative flex-1">
+              <input
+                type="text"
+                id="chatInput"
+                placeholder="Ask about books, availability, library rules, or recommendations..."
+                autocomplete="off"
+                class="w-full bg-slate-900/90 text-sm text-slate-100 placeholder-slate-500 px-4 py-3.5 rounded-2xl border border-slate-700/80 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition shadow-inner"
+              />
+            </div>
+
+            <!-- Speech to Text Mic Button -->
+            <button
+              type="button"
+              id="micBtn"
+              title="Voice Input (Speech to Text)"
+              class="w-12 h-12 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition flex-shrink-0"
+            >
+              <i data-lucide="mic" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Send Message Button -->
+            <button
+              type="submit"
+              class="w-12 h-12 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition flex-shrink-0 shadow-lg shadow-indigo-600/30"
+            >
+              <i data-lucide="send" class="w-5 h-5"></i>
+            </button>
+          </form>
+
+          <p class="text-[10px] text-center text-slate-500">
+            Digital Library Assistant grounded on official college database. Zero hallucinations.
+          </p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== VIEW 2: BOOKS CATALOG ==================== -->
+    <section id="catalogView" class="hidden flex-1 p-4 lg:p-8 overflow-y-auto">
+      <div class="max-w-6xl mx-auto space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-100">Library Book Catalog</h2>
+            <p class="text-xs text-slate-400 mt-0.5" id="catalogCountLabel">Search and filter computer engineering and allied textbooks</p>
+          </div>
+          <button onclick="resetCatalogFilters()" class="text-xs px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition self-start">
+            Clear Filters
+          </button>
+        </div>
+
+        <!-- Filter Controls Bar -->
+        <div class="glass-card p-4 rounded-2xl border border-slate-700/60 grid grid-cols-1 md:grid-cols-4 gap-3">
+          <!-- Keyword Search -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Search Catalog</label>
+            <input type="text" id="catalogSearch" placeholder="Title, author, ISBN..." class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <!-- Category Filter -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Category</label>
+            <select id="catalogCategoryFilter" class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-indigo-500">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+
+          <!-- Difficulty Filter -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Proficiency Level</label>
+            <select id="catalogDifficultyFilter" class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-indigo-500">
+              <option value="">All Difficulties</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+
+          <!-- Available Only Toggle -->
+          <div class="flex items-end pb-2">
+            <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer">
+              <input type="checkbox" id="catalogAvailableToggle" class="w-4 h-4 rounded text-indigo-600 bg-slate-900 border-slate-700 focus:ring-0">
+              <span>Available Copies Only</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Book Cards Grid -->
+        <div id="catalogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated by loadCatalog() -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: CATEGORIES EXPLORER ==================== -->
+    <section id="categoriesView" class="hidden flex-1 p-4 lg:p-8 overflow-y-auto">
+      <div class="max-w-6xl mx-auto space-y-6">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-100">Academic Book Categories</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Explore curriculum subjects and specialized technology domains</p>
+        </div>
+
+        <div id="categoriesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Populated by loadCategories() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: RECOMMENDATIONS ==================== -->
+    <section id="recommendationsView" class="hidden flex-1 p-4 lg:p-8 overflow-y-auto">
+      <div class="max-w-6xl mx-auto space-y-6">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-100">AI Book Recommendation Engine</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Content-based recommendation algorithm with pedagogical academic rationales</p>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl border border-slate-700/60 max-w-2xl">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Subject or Topic</label>
+              <input type="text" id="recSubjectInput" placeholder="e.g. Machine Learning, Python, DBMS" class="w-full bg-slate-900 text-xs text-slate-200 px-3.5 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Target Difficulty</label>
+              <select id="recDifficultySelect" class="w-full bg-slate-900 text-xs text-slate-200 px-3.5 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:border-indigo-500">
+                <option value="">Any Level</option>
+                <option value="Beginner">Beginner (Foundational)</option>
+                <option value="Intermediate">Intermediate (Core Engineering)</option>
+                <option value="Advanced">Advanced (In-depth Research)</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="generateRecommendations()" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/25">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Generate Personalized Recommendations</span>
+          </button>
+        </div>
+
+        <div id="recResultsContainer">
+          <!-- Populated by generateRecommendations() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 5: RULES & TIMINGS ==================== -->
+    <section id="rulesView" class="hidden flex-1 p-4 lg:p-8 overflow-y-auto">
+      <div class="max-w-5xl mx-auto space-y-6">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-100">Library Guidelines & Policies</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Authoritative timings, circulation limits, renewals, and fine regulations</p>
+        </div>
+
+        <div id="policiesAccordion">
+          <!-- Populated by loadLibraryPolicies() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 6: ADMIN DASHBOARD ==================== -->
+    <section id="adminView" class="hidden flex-1 p-4 lg:p-8 overflow-y-auto">
+      <div class="max-w-6xl mx-auto" id="adminContentArea">
+        <!-- Rendered by renderAdminDashboard() -->
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 7: ABOUT PROJECT (VIVA) ==================== -->
+    <section id="aboutView" class="hidden flex-1 p-4 lg:p-8 overflow-y-auto">
+      <div class="max-w-5xl mx-auto" id="vivaDiagnosticsArea">
+        <!-- Rendered by loadVivaDiagnostics() -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Book Detail Inspector Modal -->
+  <div id="bookDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card rounded-3xl max-w-lg w-full p-6 border border-slate-700 relative shadow-2xl">
+      <button onclick="closeBookModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div id="bookModalBody">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Add/Edit Book Modal -->
+  <div id="bookFormModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card rounded-3xl max-w-2xl w-full p-6 border border-slate-700 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button onclick="closeBookFormModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      
+      <h3 id="bookFormTitle" class="text-base font-bold text-slate-100 mb-4 pb-2 border-b border-slate-800">
+        Book Metadata
+      </h3>
+
+      <form id="bookForm" onsubmit="handleBookFormSubmit(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Title *</label>
+            <input type="text" id="formTitle" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Author(s) *</label>
+            <input type="text" id="formAuthor" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">ISBN *</label>
+            <input type="text" id="formIsbn" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Category *</label>
+            <select id="formCategory" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Subject *</label>
+            <input type="text" id="formSubject" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Difficulty Level</label>
+            <select id="formDifficulty" class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Publisher</label>
+            <input type="text" id="formPublisher" class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Publication Year</label>
+            <input type="number" id="formYear" value="2022" class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Edition</label>
+            <input type="text" id="formEdition" value="1st Edition" class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Shelf Number * (e.g. CS-04)</label>
+            <input type="text" id="formShelf" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Total Copies *</label>
+            <input type="number" id="formTotalCopies" min="1" value="3" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Available Copies *</label>
+            <input type="number" id="formAvailableCopies" min="0" value="2" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Physical Location *</label>
+          <input type="text" id="formLocation" value="Central Library - 1st Floor, Core Computing Stacks" required class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Book Description</label>
+          <textarea id="formDescription" rows="3" class="w-full bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeBookFormModal()" class="px-4 py-2 bg-slate-800 text-xs text-slate-300 rounded-xl hover:bg-slate-700 transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 bg-indigo-600 text-xs text-white font-semibold rounded-xl hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/20">
+            Save Book Record
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Role Switch Modal -->
+  <div id="roleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card rounded-3xl max-w-sm w-full p-6 border border-slate-700 relative shadow-2xl text-center">
+      <button onclick="toggleRoleModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto mb-3">
+        <i data-lucide="user-check" class="w-6 h-6"></i>
+      </div>
+
+      <h3 class="text-base font-bold text-slate-100">Switch Application Role</h3>
+      <p class="text-xs text-slate-400 mt-1 mb-5">Select a demo persona to test permissions and administrative controls:</p>
+
+      <div class="space-y-2.5">
+        <button onclick="handleRoleSwitch('student')" class="w-full p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-left flex items-center justify-between transition">
+          <div>
+            <p class="text-xs font-bold text-slate-200">Aaditi Sharma</p>
+            <p class="text-[10px] text-indigo-400 font-semibold uppercase">Student Role (TE Computer)</p>
+          </div>
+          <span class="text-xs text-slate-400">Select →</span>
+        </button>
+
+        <button onclick="handleRoleSwitch('admin')" class="w-full p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-left flex items-center justify-between transition">
+          <div>
+            <p class="text-xs font-bold text-slate-200">Dr. Ramesh Patil</p>
+            <p class="text-[10px] text-amber-400 font-semibold uppercase">Admin Role (Chief Librarian)</p>
+          </div>
+          <span class="text-xs text-slate-400">Select →</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Scripts -->
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
